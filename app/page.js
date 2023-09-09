@@ -43,8 +43,7 @@ export default function Home() {
       alert("Fill the required details")
       return;
     } 
-    const JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjZTQ5NTk1YS1hMmU4LTRiNjUtOTE1My1lODMyMmU0ODgzZjUiLCJlbWFpbCI6ImFiaGlzaGVrLmRhczAwMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJGUkExIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9LHsiaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjMyMWM5YjJlOTZjMWJmZWRhZDQ2Iiwic2NvcGVkS2V5U2VjcmV0IjoiZmNhMWJmNzU3Yzk5MmQ2OWFjNThjODIwMDM1ZTFkOWFlMzRkY2I5NzI2ZmJhNGM2ZjM2YjE2MTNkNTEwZDU2ZiIsImlhdCI6MTY5NDI0NDMzM30.J67GJijrmvcuN_kaIgP7lwYobEtqybaoNhoKNW_QehA";
-    event.preventDefault();
+    const JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjZTQ5NTk1YS1hMmU4LTRiNjUtOTE1My1lODMyMmU0ODgzZjUiLCJlbWFpbCI6ImFiaGlzaGVrLmRhczAwMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJGUkExIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9LHsiaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjMyMWM5YjJlOTZjMWJmZWRhZDQ2Iiwic2NvcGVkS2V5U2VjcmV0IjoiZmNhMWJmNzU3Yzk5MmQ2OWFjNThjODIwMDM1ZTFkOWFlMzRkY2I5NzI2ZmJhNGM2ZjM2YjE2MTNkNTEwZDU2ZiIsImlhdCI6MTY5NDI0NDMzM30.J67GJijrmvcuN_kaIgP7lwYobEtqybaoNhoKNW_QehA"
 
     const formData = new FormData();
     formData.append('file', image);
@@ -61,33 +60,29 @@ export default function Home() {
 
     try{
       const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
-        maxBodyLength: "Infinity",
+        
         headers: {
           'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
           Authorization: "Bearer " + JWT,
         }
       });
-      console.log(res.data);
-      const ipfshash=res.data.IpfsHash;
-      console.log(ipfshash);
-      const jsondic={
-        name,
-        description,
-         "image":`ipfs/${ipfshash}`
-      }
-
-        const resjson = await axios.post("https://api.pinata.cloud/pinning/pinJSONToIPFS", jsondic, {
-          
+   
+      const ipfshash = res.data.IpfsHash
+      const jsondic ={
+          "name":name,
+          "description":description,
+          "image":`ipfs/${ipfshash}`
+        }
+      const resjson = await axios.post("https://api.pinata.cloud/pinning/pinJSONToIPFS", jsondic, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: "Bearer " + JWT,
           }
-        });
-        const jsonHash = resjson.data.IpfHash;
-        const tokenURI = `https://ipfs.io/ipfs/${jsonHash}`;
-        const conc = contract?.mint(address, tokenURI )
-        console.log("mytokenID",conc)
-        console.log("My json hash", resjson.data)
+      });
+      const jsonHash =resjson.data.IpfsHash;
+      const tokenURI=`https://ipfs.io/ipfs/${jsonHash}`
+      const conc =contract?.mint(address,tokenURI);
+      console.log("mytokenID",conc);
     } catch (error) {
       console.error(error);
     }
